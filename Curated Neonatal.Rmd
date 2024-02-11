@@ -1,0 +1,109 @@
+---
+title: "Harmonize neonatal-related attributes in cMD metadata"
+author:
+  - Britney Pheng
+  - Sehyun Oh
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format:
+    html:
+        fontsize: 14pxs
+        toc: true
+        top-depth: 3
+output = github_document
+---
+
+```{r}
+BiocManager::install('curatedMetagenomicData')
+
+suppressPackageStartupMessages({
+  library(curatedMetagenomicData)
+  library(dplyr)
+})
+```
+
+```{r}
+data <- sampleMetadata
+
+#class(sampleMetadata)
+#dim(sampleMetadata)
+head(colnames(sampleMetadata), 10)
+sampleMetadata[1:4, 1:10]
+```
+
+```{r}
+neonatal_cols <- c('age_category',
+                   'infant_age',
+                   "born_method", 
+                   "gestational_age",
+                   "premature",
+                   "birth_weight",
+                   "lactating",
+                   "c_section_type",
+                   "feeding_practice",
+                   "formula_first_day",
+                   "breastfeeding_duration")
+```
+
+```{r}
+unique_ids <- sampleMetadata %>%
+    mutate(curation_id = paste(study_name, sample_id, sep = ":")) %>%
+    dplyr::select(curation_id, neonatal_cols)
+```
+
+```{r curated born method}
+unique_ids$curated_born_method <- NA
+
+for (x in 1:nrow(unique_ids)) {
+  if (is.na(unique_ids$born_method[x]) == TRUE) {
+    unique_ids$curated_born_method[x] <- NA
+  } else {
+    if (unique_ids$born_method[x] == 'c_section' & !is.na(unique_ids$c_section_type[x])) {
+    unique_ids$curated_born_method[x] <- unique_ids$c_section_type[x]
+  } else {
+      unique_ids$curated_born_method[x] <- unique_ids$born_method[x]
+    }
+  }
+}
+```
+
+```{r curated premature status}
+unique_ids$curated_premature <- NA
+
+for (x in 1:nrow(unique_ids)) {
+  if (is.na(unique_ids$gestational_age[x]) == TRUE) {
+    unique_ids$curated_premature[x] <- unique_ids$premature[x]
+  } else {
+    if (unique_ids$gestational_age[x] < 37) {
+      unique_ids$curated_premature[x] <- 'yes'
+    } else if (unique_ids$gestational_age[x] >= 37) {
+      unique_ids$curated_premature[x] <- 'no'
+    } else {
+       unique_ids$curated_premature[x] <- unique_ids$premature[x]
+    }
+  }
+}
+```
+
+```{r curated feeding practice}
+unique_ids$curated_feeding_practice <- NA
+
+for (x in 1:nrow(unique_ids)) {
+  if (is.na(unique_ids$feeding_practice[x]) == TRUE) {
+    unique_ids$curated_feeding_practice[x] <- unique_ids$feeding_practice[x]
+  } else if (unique_ids$feeding_practice[x] == 'any_breastfeeding') {
+    unique_ids$curated_feeding_practice[x] <- 'exclusively_breastfeeding; mixed_feeding'
+  } else if (is.na(unique_ids$formula_first_day[x]) == TRUE) {
+    unique_ids$curated_feeding_practice[x] <- unique_ids$feeding_practice[x]
+  } else if (!(unique_ids$formula_first_day[x] <= unique_ids$infant_age[x]) 
+             & !(is.na(unique_ids$breastfeeding_duration[x]))) {
+    unique_ids$curated_feeding_practice[x] <- 'exclusively_breastfeeding'
+  } else {
+    unique_ids$curated_feeding_practice[x] <- unique_ids$feeding_practice[x]
+  }
+}
+```
+
+```{r create csv file}
+write.csv(unique_ids, file = 'curated_neonatal_cols.csv')
+```
+
