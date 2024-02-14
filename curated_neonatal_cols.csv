@@ -1,4 +1,4 @@
-"","curation_id","age_category","infant_age","born_method","gestational_age","premature","birth_weight","lactating","c_section_type","feeding_practice","formula_first_day","breastfeeding_duration","curated_born_method","curated_premature","curated_feeding_practice"
+"","curation_id","age_category","infant_age","born_method","gestational_age","premature","birth_weight","lactating","c_section_type","feeding_practice","formula_first_day","breastfeeding_duration","neonatal_delivery_procedure","neonatal_preterm_birth","neonatal_feeding_method"
 "1","AsnicarF_2017:MV_FEI1_t1Q14","newborn",90,NA,NA,NA,NA,"no",NA,NA,NA,NA,NA,NA,NA
 "2","AsnicarF_2017:MV_FEI2_t1Q14","newborn",90,NA,NA,NA,NA,"no",NA,NA,NA,NA,NA,NA,NA
 "3","AsnicarF_2017:MV_FEI3_t1Q14","newborn",90,NA,NA,NA,NA,"no",NA,NA,NA,NA,NA,NA,NA
