@@ -11,64 +11,159 @@ format:
 output: github_document
 ---
 
-#### Load Packages
-```{r}
+# Setup
+## Load packages
+```{r install packages, eval=FALSE}
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
+BiocManager::install('curatedMetagenomicData')
+```
 
+```{r}
 suppressPackageStartupMessages({
   library(curatedMetagenomicData)
-  library(dplyr)
+  library(tidyverse)
 })
 ```
+
+## Load data
+**Comment:**
+This new object, `data`, seems unnecessary.
 ```{r sampleMetadata, echo=FALSE}
 data <- sampleMetadata
-
-#class(sampleMetadata)
-#dim(sampleMetadata)
-#head(colnames(sampleMetadata), 10)
-#sampleMetadata[1:4, 1:10]
 ```
-#### Create a list of selected sampleMetadata columns to work with
-```{r selected sampleMetadata columns}
-selected_cols <- c("age_category",
+
+_**Comment:**_
+I removed the `lactating` column.
+
+```{r neonatal columns}
+## A list of neonatal data column names
+neonatal_cols <- c("age_category",
                    "infant_age",
                    "born_method", 
                    "gestational_age",
                    "premature",
                    "birth_weight",
-                   "lactating",
                    "c_section_type",
                    "feeding_practice",
                    "formula_first_day",
                    "breastfeeding_duration")
 ```
-#### Create a new dataframe *nn.ds* with a new column for unique *study:sample_id* rows and the selected sampleMetadata columns
-```{r dataframe, warning=FALSE}
-nn.ds <- sampleMetadata %>%
+
+```{r curated neonatal dataframe, warning=FALSE}
+tb <- sampleMetadata %>%
     mutate(curation_id = paste(study_name, sample_id, sep = ":")) %>%
-    dplyr::select(curation_id, selected_cols)
+    dplyr::select(curation_id, neonatal_cols)
 ```
-### Curated Neonatal Columns
 
-#### Clean up *born_method* column into curated *neonatal_delivery_procedure* column
-Use **c_section_type** data element to expand **born_method** column answers. 
-C-section can be either an Emergency CS, Elective CS, or kept broadly as "C-section" if there is no expanded answer in the corresponding **c_section_type** column.
+# neonatal_delivery_procedure
+The two original columns `born_method` and `c_section_type` are harmonized to
+the curated column, `neonatal_delivery_procedure`.
+
+## EDA
+```{r}
+## 782 sapmles have information from both `born_method` and `c_section_type`
+na_summary <- rowSums(!is.na(tb[c("born_method", "c_section_type")]))
+table(na_summary)
+
+## All the used terms
+unique(tb$born_method)
+unique(tb$c_section_type)
+```
+
+```{r}
+both_ind <- which(na_summary == 2)
+unique(tb$born_method[both_ind])
+unique(tb$c_section_type)
+
+## No sample has only `c_section_type` info
+sum(is.na(tb$born_method) & !is.na(tb$c_section_type)) 
+```
+
+## Consolidate redundant info
 ```{r curated delivery procedure}
-nn.ds$neonatal_delivery_procedure <- NA
+tb$source <- NA
+tb$value <- NA
 
-for (i in 1:nrow(nn.ds)) {
-  if (is.na(nn.ds$born_method[i])) {
-    nn.ds$neonatal_delivery_procedure[i] <- NA
-  } else {
-    if (nn.ds$born_method[i] == 'c_section' & !is.na(nn.ds$c_section_type[i])) {
-    nn.ds$neonatal_delivery_procedure[i] <- nn.ds$c_section_type[i]
-  } else {
-      nn.ds$neonatal_delivery_procedure[i] <- nn.ds$born_method[i]
+for (i in seq_len(nrow(tb))) {
+    if (is.na(tb$born_method[i])) {
+        tb$source[i] <- NA
+        tb$value[i] <- NA
+    } else if (!is.na(tb$born_method[i]) & is.na(tb$c_section_type[i])) {
+        tb$source[i] <- "born_method"
+        tb$value[i] <- tb$born_method[i]
+    } else {
+        tb$source[i] <- "c_section_type"
+        tb$value[i] <- tb$c_section_type[i]
     }
-  }
 }
 ```
+
+## Curate ontology terms
+### Create curation map
+The 'allowedvalues' and their 'ontology ids' are available in the data 
+dictionary Google Sheet, `cMD_data_dictionary`, or in the GitHub repo.
+
+You can look up the format of the curation maps in the manuscript's 
+supplementary method section or other curation maps.
+
+```{r}
+delivery_map <- data.frame(
+    original_value = c("Elective_CS", 
+                       "Emergency_CS",
+                       "c_section",
+                       "vaginal"),
+    curated_ontology_term = c("Elective Cesarean Delivery", 
+                              "Emergency Cesarean Delivery",
+                              "Cesarean Section",
+                              "Vaginal Delivery"),
+    curated_ontology_term_id = c("NCIT:C114141", 
+                                 "NCIT:C92772", 
+                                 "NCIT:C46088", 
+                                 "NCIT:C81303"),
+    curated_ontology_term_db = c("NCIT", "NCIT", "NCIT", "NCIT")
+)
+```
+  
+### Update the metadata with the curated terms 
+```{r}
+curated_dat <- tb %>%
+    transmute(curation_id = curation_id,
+              original_source = source,
+              original_value = value,
+              curated_ontology_term = plyr::mapvalues(
+                  x = value, 
+                  from = delivery_map$original_value,
+                  to = delivery_map$curated_ontology_term,
+                  warn_missing = FALSE
+              )) %>%
+    mutate(curated_ontology_term_id = plyr::mapvalues(
+        x = curated_ontology_term,
+        from = delivery_map$curated_ontology_term,
+        to = delivery_map$curated_ontology_term_id,
+        warn_missing = FALSE
+    )) %>%
+    mutate(curated_ontology_term_db = plyr::mapvalues(
+        x = curated_ontology_term,
+        from = delivery_map$curated_ontology_term,
+        to = delivery_map$curated_ontology_term_db,
+        warn_missing = FALSE
+    ))
+```
+
+Check the harmonized/curated metadata
+```{r}
+non_na_ind <- which(!is.na(curated_dat$original_source))
+head(curated_dat[c(1:3, non_na_ind),])
+```
+
+## Save the results
+```{r}
+readr::write_csv(delivery_map, "maps/cMD_delivery_procedure_map.csv")
+readr::write_csv(curated_dat, "data/curated_delivery_procedure.csv")
+```
+
+
 #### Clean up *premature* column into curated *neonatal_preterm_birth* column
 Use **gestational_age** data element to clean up premature status. 
 
