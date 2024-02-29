@@ -273,8 +273,8 @@ for (i in seq_len(nrow(tb))) {
 premature_map <- data.frame(
   original_value = c("yes",
                      "no"),
-  curated_ontology_term = c("Yes",
-                            "No"),
+  curated_ontology_term = c("Preterm",
+                            "Term"),
   curated_ontology_term_id = c("NCIT:C92861",
                               "NCIT:C114093"),
   curated_ontology_term_db = c("NCIT", "NCIT")
@@ -320,9 +320,9 @@ head(curated_premature_dat[c(1:3, non_na_ind),])
     ## 1                     <NA>                     <NA>
     ## 2                     <NA>                     <NA>
     ## 3                     <NA>                     <NA>
-    ## 1964                   Yes                     NCIT
-    ## 1965                   Yes                     NCIT
-    ## 1966                   Yes                     NCIT
+    ## 1964               Preterm                     NCIT
+    ## 1965               Preterm                     NCIT
+    ## 1966               Preterm                     NCIT
 
 ### Save the results
 
@@ -511,7 +511,3 @@ head(curated_feeding_dat[c(1:3, non_na_ind),])
 readr::write_csv(feeding_map, "maps/cMD_feeding_map.csv")
 readr::write_csv(curated_feeding_dat, "data/curated_feeding_method.csv")
 ```
-
-#### Rename unchanged neonatal data columns
-
-# `{r rename data columns, results='hide'} # nn.ds %>% #   rename( #     neonatal_birth_weight = birth_weight, #     neonatal_gestational_age = gestational_age) #`

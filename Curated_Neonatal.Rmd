@@ -207,8 +207,8 @@ for (i in seq_len(nrow(tb))) {
 premature_map <- data.frame(
   original_value = c("yes",
                      "no"),
-  curated_ontology_term = c("Yes",
-                            "No"),
+  curated_ontology_term = c("Preterm",
+                            "Term"),
   curated_ontology_term_id = c("NCIT:C92861",
                               "NCIT:C114093"),
   curated_ontology_term_db = c("NCIT", "NCIT")
