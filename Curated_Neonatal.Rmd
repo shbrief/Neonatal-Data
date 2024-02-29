@@ -27,19 +27,9 @@ suppressPackageStartupMessages({
 ```
 
 ## Load data
-**Comment:**
-This new object, `data`, seems unnecessary.
-```{r sampleMetadata, echo=FALSE}
-data <- sampleMetadata
-```
-
-_**Comment:**_
-I removed the `lactating` column.
-
 ```{r neonatal columns}
 ## A list of neonatal data column names
-neonatal_cols <- c("age_category",
-                   "infant_age",
+neonatal_cols <- c("infant_age",
                    "born_method", 
                    "gestational_age",
                    "premature",
@@ -62,7 +52,7 @@ the curated column, `neonatal_delivery_procedure`.
 
 ## EDA
 ```{r}
-## 782 sapmles have information from both `born_method` and `c_section_type`
+## 782 samples have information from both `born_method` and `c_section_type`
 na_summary <- rowSums(!is.na(tb[c("born_method", "c_section_type")]))
 table(na_summary)
 
@@ -70,11 +60,9 @@ table(na_summary)
 unique(tb$born_method)
 unique(tb$c_section_type)
 ```
-
 ```{r}
 both_ind <- which(na_summary == 2)
 unique(tb$born_method[both_ind])
-unique(tb$c_section_type)
 
 ## No sample has only `c_section_type` info
 sum(is.na(tb$born_method) & !is.na(tb$c_section_type)) 
@@ -127,7 +115,7 @@ delivery_map <- data.frame(
   
 ### Update the metadata with the curated terms 
 ```{r}
-curated_dat <- tb %>%
+curated_delivery_dat <- tb %>%
     transmute(curation_id = curation_id,
               original_source = source,
               original_value = value,
@@ -153,68 +141,225 @@ curated_dat <- tb %>%
 
 Check the harmonized/curated metadata
 ```{r}
-non_na_ind <- which(!is.na(curated_dat$original_source))
-head(curated_dat[c(1:3, non_na_ind),])
+non_na_ind <- which(!is.na(curated_delivery_dat$original_source))
+head(curated_delivery_dat[c(1:3, non_na_ind),])
 ```
 
 ## Save the results
 ```{r}
 readr::write_csv(delivery_map, "maps/cMD_delivery_procedure_map.csv")
-readr::write_csv(curated_dat, "data/curated_delivery_procedure.csv")
+readr::write_csv(curated_delivery_dat, "data/curated_delivery_procedure.csv")
 ```
 
+# neonatal_preterm_birth
+The two original columns `gestational_age` and `premature` are harmonized to the curated column `neonatal_preterm_birth`.
 
-#### Clean up *premature* column into curated *neonatal_preterm_birth* column
-Use **gestational_age** data element to clean up premature status. 
+## EDA
+```{r}
+## 1891 samples have information for both `gestational_age` and `premature`
+na_summary <- rowSums(!is.na(tb[c("gestational_age", "premature")]))
+table(na_summary)
+```
 
-Pre-maturity (preterm birth) is defined as any birth less than 37 weeks and 0 days gestational age.
-```{r curated preterm birth}
-nn.ds$neonatal_preterm_birth <- NA
+```{r}
+## All the used values
+unique(tb$premature)
+sort(unique(tb$gestational_age), na.last=FALSE)
+```
 
-for (i in 1:nrow(nn.ds)) {
-  if (is.na(nn.ds$gestational_age[i])) {
-    nn.ds$neonatal_preterm_birth[i] <- nn.ds$premature[i]
+```{r}
+## 329 samples have no `premature` info, but a provided `gestational_age` observation
+sum(is.na(tb$premature) & !is.na(tb$gestational_age))
+
+## 4 samples can have `neonatal_preterm_birth` == 'yes' 
+sum(is.na(tb$premature) & tb$gestational_age < 37, na.rm=TRUE)
+
+## 325 samples can have `neonatal_preterm_birth` == 'no'
+sum(is.na(tb$premature) & tb$gestational_age >= 37, na.rm=TRUE)
+```
+
+## Consolidate redundant info
+```{r}
+tb$source <- NA
+tb$value <- NA
+
+for (i in seq_len(nrow(tb))) {
+  if (is.na(tb$gestational_age[i])) {
+    tb$source[i] <- NA
+    tb$value[i] <- NA
+  } else if (is.na(tb$premature[i]) & tb$gestational_age[i] < 37) {
+    tb$source[i] <- "gestational_age"
+    tb$value[i] <- "yes"
+  } else if (is.na(tb$premature[i]) & tb$gestational_age[i] >= 37) {
+    tb$source[i] <- "gestational_age"
+    tb$value[i] <- "no"
   } else {
-    if (nn.ds$gestational_age[i] < 37) {
-      nn.ds$neonatal_preterm_birth[i] <- 'yes'
-    } else if (nn.ds$gestational_age[i] >= 37) {
-      nn.ds$neonatal_preterm_birth[i] <- 'no'
-    } else {
-      nn.ds$neonatal_preterm_birth[i] <- nn.ds$premature[x]
-    }
+    tb$source[i] <- "premature"
+    tb$value[i] <- tb$premature[i]
   }
 }
 ```
-#### Clean up *feeding_practice* column into curated *neonatal_feeding_method* column
-Replace "any_breastfeeding" **feeding_practice** data element answer with "exclusively_breastfeeding; mixed_feeding" answer.
 
-Clean up "exclusively_breastfeeding" answer in the **feeding_practice** column to include any infant who was breastfed *and* did not receive formula between the time of birth and data collection. If **infant_age** data element is less than the day marked for **formula_first_day** element and there is a valid (non-NA) **breastfeeding_duration** answer, change feeding method answer to "exclusively_breastfeeding". This is with the notion that **infant_age** column provides the age of the infant at the time that samples were collected.
-```{r curated feeding method}
-nn.ds$neonatal_feeding_method <- NA
+## Curate ontology terms
+### Create curation map
 
-for (i in 1:nrow(nn.ds)) {
-  if (is.na(nn.ds$feeding_practice[i])) {
-    nn.ds$neonatal_feeding_method[i] <- nn.ds$feeding_practice[i]
-  } else if (nn.ds$feeding_practice[i] == 'any_breastfeeding') {
-    nn.ds$neonatal_feeding_method[i] <- 'exclusively_breastfeeding; mixed_feeding'
-  } else if (is.na(nn.ds$formula_first_day[i]) == TRUE) {
-    nn.ds$neonatal_feeding_method[i] <- nn.ds$feeding_practice[i]
-  } else if (!(nn.ds$formula_first_day[i] <= nn.ds$infant_age[i]) 
-             & !(is.na(nn.ds$breastfeeding_duration[i]))) {
-    nn.ds$neonatal_feeding_method[i] <- 'exclusively_breastfeeding'
+```{r}
+premature_map <- data.frame(
+  original_value = c("yes",
+                     "no"),
+  curated_ontology_term = c("Yes",
+                            "No"),
+  curated_ontology_term_id = c("NCIT:C92861",
+                              "NCIT:C114093"),
+  curated_ontology_term_db = c("NCIT", "NCIT")
+)
+```
+
+### Update the metadata with the curated terms
+```{r}
+curated_premature_dat <- tb %>%
+  transmute(curation_id = curation_id,
+            original_source = source,
+            original_value = value,
+            curated_ontology_term = plyr::mapvalues(
+              x = value,
+              from = premature_map$original_value,
+              to = premature_map$curated_ontology_term,
+              warn_missing = FALSE
+            )) %>%
+    mutate(curated_ontology_term_id = plyr::mapvalues(
+      x = curated_ontology_term,
+      from = premature_map$curated_ontology_term,
+      to = premature_map$curated_ontology_term_db,
+      warn_missing = FALSE
+    ))
+```
+
+Check the harmonized/curated metadata
+```{r}
+non_na_ind <- which(!is.na(curated_premature_dat$original_source))
+head(curated_premature_dat[c(1:3, non_na_ind),])
+```
+### Save the results
+```{r}
+readr::write_csv(premature_map, "maps/cMD_preterm_birth_map.csv")
+readr::write_csv(curated_premature_dat, "data/curated_preterm_birth.csv")
+```
+
+# neonatal_feeding_method
+The three original columns `feeding_practice`, `formula_first_day`, and `breastfeeding_duration` are harmonized to the curated column `neonatal_feeding_method`.
+
+## EDA
+```{r}
+## 136 samples have information for all three columns
+na_summary <- rowSums(!is.na(tb[c("feeding_practice", "formula_first_day", "breastfeeding_duration")]))
+table(na_summary)
+```
+
+```{r}
+## All the used values
+unique(tb$feeding_practice)
+
+sort(unique(tb$formula_first_day), na.last=FALSE)
+
+sort(unique(tb$breastfeeding_duration), na.last=FALSE)
+```
+
+```{r}
+## No samples with a blank feeding practice and values for breastfeeding and formula feeding
+sum(is.na(tb$feeding_practice) & !is.na(tb$formula_first_day) & !is.na(tb$breastfeeding_duration))
+
+## 21 samples with "any_breastfeeding" value for `feeding_practice` variable
+sum((tb$feeding_practice == "any_breastfeeding"), na.rm = TRUE)
+
+## 85 samples where `feeding_practice` should be "exclusively_breastfeeding"
+sum(!is.na(tb$breastfeeding_duration) & (tb$infant_age < tb$formula_first_day), na.rm = TRUE)
+
+## 70 samples out of the 85 have "exclusively_breastfeeding" for `feeding_practice` column
+sum((tb$feeding_practice == "exclusively_breastfeeding") & !is.na(tb$breastfeeding_duration) & (tb$infant_age < tb$formula_first_day), na.rm = TRUE)
+
+## 15 samples should have "exclusively_breastfeeding" as their feeding_practice value given that the first day of formula feeding was after the date the sample was collected
+sum((tb$feeding_practice == 'mixed_feeding') & !is.na(tb$breastfeeding_duration) & (tb$infant_age < tb$formula_first_day))
+```
+
+## Consolidate redundant info
+```{r}
+tb$source <- NA
+tb$value <- NA
+
+for (i in seq_len(nrow(tb))) {
+  if (is.na(tb$feeding_practice[i])) {
+    tb$source[i] <- NA
+    tb$value[i] <- NA
+  } else if (tb$feeding_practice[i] == "any_breastfeeding") {
+    tb$source[i] <- "feeding_practice"
+    tb$value[i] <- "exclusively_breastfeeding; mixed_feeding"
+  } else if ((tb$formula_first_day[i] > tb$infant_age[i]) &
+             !is.na(tb$breastfeeding_duration[i]) &
+             !(tb$feeding_practice[i] == "exclusively_breastfeeding")) {
+    tb$source[i] <- "formula_first_day"
+    tb$value[i] <- "exclusively_breastfeeding"
   } else {
-    nn.ds$neonatal_feeding_method[i] <- nn.ds$feeding_practice[i]
+    tb$source[i] <- "feeding_practice"
+    tb$value[i] <- tb$feeding_practice[i]
   }
 }
 ```
-#### Rename unchanged neonatal data columns
-```{r rename data columns, results='hide'}
-nn.ds %>% 
-  rename(
-    neonatal_birth_weight = birth_weight,
-    neonatal_gestational_age = gestational_age)
+
+## Curate ontology terms
+### Create curation map
+"mixed_feeding"               "exclusively_breastfeeding"  
+[4] "no_breastfeeding"            "any_breastfeeding"           "exclusively_formula_feeding"
+
+```{r}
+feeding_map <- data.frame(
+  original_value = c("exclusively_breastfeeding; mixed_feeding",
+                     "exclusively_breastfeeding",
+                     "exclusively_formula_feeding",
+                     "mixed_feeding",
+                     "no_breastfeeding"
+                     ),
+  curated_ontology_term = c("Exclusively Breastfeeding; Mixed Feeding",
+                            "Exclusively Breastfeeding",
+                            "Exclusively Formula Feeding",
+                            "Mixed Feeding",
+                            "No Breastfeeding"),
+  curated_ontology_term_id = c("ONS:1000029; NA",
+                              "ONS:1000029",
+                              "MAXO:0000775",
+                              NA,
+                              NA),
+  curated_ontology_term_db = c("ONS; NA", "ONS", "MAXO", NA, NA)
+)
 ```
-#### Generate a .csv file with the curated neonatal data columns
-```{r create csv file}
-write.csv(nn.ds, file = 'curated_neonatal_cols.csv')
+
+### Update the metadata with the curated terms
+```{r}
+curated_feeding_dat <- tb %>%
+  transmute(curation_id = curation_id,
+            original_source = source,
+            original_value = value,
+            curated_ontology_term = plyr::mapvalues(
+              x = value,
+              from = feeding_map$original_value,
+              to = feeding_map$curated_ontology_term,
+              warn_missing = FALSE
+            )) %>%
+    mutate(curated_ontology_term_id = plyr::mapvalues(
+      x = curated_ontology_term,
+      from = feeding_map$curated_ontology_term,
+      to = feeding_map$curated_ontology_term_db,
+      warn_missing = FALSE
+    ))
+```
+
+Check the harmonized/curated metadata
+```{r}
+non_na_ind <- which(!is.na(curated_feeding_dat$original_source))
+head(curated_feeding_dat[c(1:3, non_na_ind),])
+```
+### Save the results
+```{r}
+readr::write_csv(feeding_map, "maps/cMD_feeding_map.csv")
+readr::write_csv(curated_feeding_dat, "data/curated_feeding_method.csv")
 ```
