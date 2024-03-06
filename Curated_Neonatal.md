@@ -1,7 +1,7 @@
 Harmonize Neonatal-Related Attributes in cMD Metadata
 ================
 Britney Pheng, Sehyun Oh <br>
-February 28, 2024
+March 05, 2024
 
 # Setup
 
@@ -273,8 +273,8 @@ for (i in seq_len(nrow(tb))) {
 premature_map <- data.frame(
   original_value = c("yes",
                      "no"),
-  curated_ontology_term = c("Preterm",
-                            "Term"),
+  curated_ontology_term = c("Preterm Birth",
+                            "Term Birth"),
   curated_ontology_term_id = c("NCIT:C92861",
                               "NCIT:C114093"),
   curated_ontology_term_db = c("NCIT", "NCIT")
@@ -320,9 +320,9 @@ head(curated_premature_dat[c(1:3, non_na_ind),])
     ## 1                     <NA>                     <NA>
     ## 2                     <NA>                     <NA>
     ## 3                     <NA>                     <NA>
-    ## 1964               Preterm                     NCIT
-    ## 1965               Preterm                     NCIT
-    ## 1966               Preterm                     NCIT
+    ## 1964         Preterm Birth                     NCIT
+    ## 1965         Preterm Birth                     NCIT
+    ## 1966         Preterm Birth                     NCIT
 
 ### Save the results
 
@@ -417,9 +417,6 @@ for (i in seq_len(nrow(tb))) {
   if (is.na(tb$feeding_practice[i])) {
     tb$source[i] <- NA
     tb$value[i] <- NA
-  } else if (tb$feeding_practice[i] == "any_breastfeeding") {
-    tb$source[i] <- "feeding_practice"
-    tb$value[i] <- "exclusively_breastfeeding; mixed_feeding"
   } else if ((tb$formula_first_day[i] > tb$infant_age[i]) &
              !is.na(tb$breastfeeding_duration[i]) &
              !(tb$feeding_practice[i] == "exclusively_breastfeeding")) {
@@ -442,23 +439,21 @@ for (i in seq_len(nrow(tb))) {
 
 ``` r
 feeding_map <- data.frame(
-  original_value = c("exclusively_breastfeeding; mixed_feeding",
+  original_value = c("any_breastfeeding",
+                     "any_breastfeeding",
                      "exclusively_breastfeeding",
                      "exclusively_formula_feeding",
                      "mixed_feeding",
                      "no_breastfeeding"
                      ),
-  curated_ontology_term = c("Exclusively Breastfeeding; Mixed Feeding",
+  curated_ontology_term = c("Exclusively Breastfeeding",
+                            "Mixed Feeding",
                             "Exclusively Breastfeeding",
                             "Exclusively Formula Feeding",
                             "Mixed Feeding",
                             "No Breastfeeding"),
-  curated_ontology_term_id = c("ONS:1000029; NA",
-                              "ONS:1000029",
-                              "MAXO:0000775",
-                              NA,
-                              NA),
-  curated_ontology_term_db = c("ONS; NA", "ONS", "MAXO", NA, NA)
+  curated_ontology_term_id = NA,
+  curated_ontology_term_db = NA
 )
 ```
 
@@ -483,11 +478,11 @@ curated_feeding_dat <- tb %>%
     ))
 ```
 
-Check the harmonized/curated metadata
+### Check the harmonized/curated metadata
 
 ``` r
 non_na_ind <- which(!is.na(curated_feeding_dat$original_source))
-head(curated_feeding_dat[c(1:3, non_na_ind),])
+head(curated_feeding_dat[c(1:3, non_na_ind),], 10)
 ```
 
     ##                      curation_id  original_source            original_value
@@ -497,13 +492,47 @@ head(curated_feeding_dat[c(1:3, non_na_ind),])
     ## 1123       BackhedF_2015:SID10_B feeding_practice             mixed_feeding
     ## 1125      BackhedF_2015:SID10_4M feeding_practice exclusively_breastfeeding
     ## 1126     BackhedF_2015:SID10_12M feeding_practice          no_breastfeeding
+    ## 1127       BackhedF_2015:SID45_B feeding_practice exclusively_breastfeeding
+    ## 1128      BackhedF_2015:SID45_4M feeding_practice exclusively_breastfeeding
+    ## 1129     BackhedF_2015:SID45_12M feeding_practice         any_breastfeeding
+    ## 1131       BackhedF_2015:SID53_B feeding_practice exclusively_breastfeeding
     ##          curated_ontology_term curated_ontology_term_id
     ## 1                         <NA>                     <NA>
     ## 2                         <NA>                     <NA>
     ## 3                         <NA>                     <NA>
     ## 1123             Mixed Feeding                     <NA>
-    ## 1125 Exclusively Breastfeeding                      ONS
+    ## 1125 Exclusively Breastfeeding                     <NA>
     ## 1126          No Breastfeeding                     <NA>
+    ## 1127 Exclusively Breastfeeding                     <NA>
+    ## 1128 Exclusively Breastfeeding                     <NA>
+    ## 1129 Exclusively Breastfeeding                     <NA>
+    ## 1131 Exclusively Breastfeeding                     <NA>
+
+``` r
+feeding_map2 <- feeding_map %>% 
+  group_by(original_value) %>%
+  mutate(curated_ontology_term = str_c(curated_ontology_term, collapse= '; ')) %>%
+  unique()
+```
+
+``` r
+curated_feeding_dat2 <- tb %>%
+  transmute(curation_id = curation_id,
+            original_source = source,
+            original_value = value,
+            curated_ontology_term = plyr::mapvalues(
+              x = value,
+              from = feeding_map2$original_value,
+              to = feeding_map2$curated_ontology_term,
+              warn_missing = FALSE
+            )) %>%
+    mutate(curated_ontology_term_id = plyr::mapvalues(
+      x = curated_ontology_term,
+      from = feeding_map2$curated_ontology_term,
+      to = feeding_map2$curated_ontology_term_db,
+      warn_missing = FALSE
+    ))
+```
 
 ### Save the results
 

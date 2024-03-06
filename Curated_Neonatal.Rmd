@@ -207,8 +207,8 @@ for (i in seq_len(nrow(tb))) {
 premature_map <- data.frame(
   original_value = c("yes",
                      "no"),
-  curated_ontology_term = c("Preterm",
-                            "Term"),
+  curated_ontology_term = c("Preterm Birth",
+                            "Term Birth"),
   curated_ontology_term_id = c("NCIT:C92861",
                               "NCIT:C114093"),
   curated_ontology_term_db = c("NCIT", "NCIT")
@@ -291,9 +291,6 @@ for (i in seq_len(nrow(tb))) {
   if (is.na(tb$feeding_practice[i])) {
     tb$source[i] <- NA
     tb$value[i] <- NA
-  } else if (tb$feeding_practice[i] == "any_breastfeeding") {
-    tb$source[i] <- "feeding_practice"
-    tb$value[i] <- "exclusively_breastfeeding; mixed_feeding"
   } else if ((tb$formula_first_day[i] > tb$infant_age[i]) &
              !is.na(tb$breastfeeding_duration[i]) &
              !(tb$feeding_practice[i] == "exclusively_breastfeeding")) {
@@ -313,23 +310,21 @@ for (i in seq_len(nrow(tb))) {
 
 ```{r}
 feeding_map <- data.frame(
-  original_value = c("exclusively_breastfeeding; mixed_feeding",
+  original_value = c("any_breastfeeding",
+                     "any_breastfeeding",
                      "exclusively_breastfeeding",
                      "exclusively_formula_feeding",
                      "mixed_feeding",
                      "no_breastfeeding"
                      ),
-  curated_ontology_term = c("Exclusively Breastfeeding; Mixed Feeding",
+  curated_ontology_term = c("Exclusively Breastfeeding",
+                            "Mixed Feeding",
                             "Exclusively Breastfeeding",
                             "Exclusively Formula Feeding",
                             "Mixed Feeding",
                             "No Breastfeeding"),
-  curated_ontology_term_id = c("ONS:1000029; NA",
-                              "ONS:1000029",
-                              "MAXO:0000775",
-                              NA,
-                              NA),
-  curated_ontology_term_db = c("ONS; NA", "ONS", "MAXO", NA, NA)
+  curated_ontology_term_id = NA,
+  curated_ontology_term_db = NA
 )
 ```
 
@@ -353,11 +348,38 @@ curated_feeding_dat <- tb %>%
     ))
 ```
 
-Check the harmonized/curated metadata
+### Check the harmonized/curated metadata
 ```{r}
 non_na_ind <- which(!is.na(curated_feeding_dat$original_source))
-head(curated_feeding_dat[c(1:3, non_na_ind),])
+head(curated_feeding_dat[c(1:3, non_na_ind),], 10)
 ```
+
+```{r}
+feeding_map2 <- feeding_map %>% 
+  group_by(original_value) %>%
+  mutate(curated_ontology_term = str_c(curated_ontology_term, collapse= '; ')) %>%
+  unique()
+```
+
+```{r}
+curated_feeding_dat2 <- tb %>%
+  transmute(curation_id = curation_id,
+            original_source = source,
+            original_value = value,
+            curated_ontology_term = plyr::mapvalues(
+              x = value,
+              from = feeding_map2$original_value,
+              to = feeding_map2$curated_ontology_term,
+              warn_missing = FALSE
+            )) %>%
+    mutate(curated_ontology_term_id = plyr::mapvalues(
+      x = curated_ontology_term,
+      from = feeding_map2$curated_ontology_term,
+      to = feeding_map2$curated_ontology_term_db,
+      warn_missing = FALSE
+    ))
+```
+
 ### Save the results
 ```{r}
 readr::write_csv(feeding_map, "maps/cMD_feeding_map.csv")
