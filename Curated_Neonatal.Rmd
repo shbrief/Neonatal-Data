@@ -60,6 +60,7 @@ table(na_summary)
 unique(tb$born_method)
 unique(tb$c_section_type)
 ```
+
 ```{r}
 both_ind <- which(na_summary == 2)
 unique(tb$born_method[both_ind])
@@ -151,20 +152,29 @@ readr::write_csv(delivery_map, "maps/cMD_delivery_procedure_map.csv")
 readr::write_csv(curated_delivery_dat, "data/curated_delivery_procedure.csv")
 ```
 
+
+
 # neonatal_preterm_birth
-The two original columns `gestational_age` and `premature` are harmonized to the curated column `neonatal_preterm_birth`.
+The two original columns `gestational_age` and `premature` are harmonized 
+to the curated column `neonatal_preterm_birth`.
 
 ## EDA
 ```{r}
 ## 1891 samples have information for both `gestational_age` and `premature`
 na_summary <- rowSums(!is.na(tb[c("gestational_age", "premature")]))
 table(na_summary)
+summary(tb$gestational_age)
 ```
 
 ```{r}
 ## All the used values
 unique(tb$premature)
-sort(unique(tb$gestational_age), na.last=FALSE)
+summary(tb$gestational_age)
+```
+
+```{r}
+## No error detected in `gestational_age` and `premature`
+sum(tb$premature == "yes" & tb$gestational_age > 37, na.rm = TRUE)
 ```
 
 ```{r}
@@ -178,7 +188,7 @@ sum(is.na(tb$premature) & tb$gestational_age < 37, na.rm=TRUE)
 sum(is.na(tb$premature) & tb$gestational_age >= 37, na.rm=TRUE)
 ```
 
-## Consolidate redundant info
+## Populate `preterm` with `gestational_age`
 ```{r}
 tb$source <- NA
 tb$value <- NA
@@ -202,7 +212,6 @@ for (i in seq_len(nrow(tb))) {
 
 ## Curate ontology terms
 ### Create curation map
-
 ```{r}
 premature_map <- data.frame(
   original_value = c("yes",
@@ -240,46 +249,63 @@ Check the harmonized/curated metadata
 non_na_ind <- which(!is.na(curated_premature_dat$original_source))
 head(curated_premature_dat[c(1:3, non_na_ind),])
 ```
-### Save the results
+
+## Save the results
 ```{r}
 readr::write_csv(premature_map, "maps/cMD_preterm_birth_map.csv")
 readr::write_csv(curated_premature_dat, "data/curated_preterm_birth.csv")
 ```
 
+
+
 # neonatal_feeding_method
-The three original columns `feeding_practice`, `formula_first_day`, and `breastfeeding_duration` are harmonized to the curated column `neonatal_feeding_method`.
+The three original columns `feeding_practice`, `formula_first_day`, and 
+`breastfeeding_duration` are harmonized to the curated column 
+`neonatal_feeding_method`.
 
 ## EDA
 ```{r}
 ## 136 samples have information for all three columns
-na_summary <- rowSums(!is.na(tb[c("feeding_practice", "formula_first_day", "breastfeeding_duration")]))
+na_summary <- rowSums(!is.na(tb[c("feeding_practice", 
+                                  "formula_first_day", 
+                                  "breastfeeding_duration")]))
 table(na_summary)
 ```
 
 ```{r}
 ## All the used values
 unique(tb$feeding_practice)
-
-sort(unique(tb$formula_first_day), na.last=FALSE)
-
-sort(unique(tb$breastfeeding_duration), na.last=FALSE)
+summary(tb$formula_first_day)
+summary(tb$breastfeeding_duration)
 ```
 
 ```{r}
 ## No samples with a blank feeding practice and values for breastfeeding and formula feeding
-sum(is.na(tb$feeding_practice) & !is.na(tb$formula_first_day) & !is.na(tb$breastfeeding_duration))
+sum(is.na(tb$feeding_practice) & 
+        !is.na(tb$formula_first_day) & 
+        !is.na(tb$breastfeeding_duration))
 
 ## 21 samples with "any_breastfeeding" value for `feeding_practice` variable
 sum((tb$feeding_practice == "any_breastfeeding"), na.rm = TRUE)
+table(tb$feeding_practice)
 
 ## 85 samples where `feeding_practice` should be "exclusively_breastfeeding"
-sum(!is.na(tb$breastfeeding_duration) & (tb$infant_age < tb$formula_first_day), na.rm = TRUE)
+sum(!is.na(tb$breastfeeding_duration) & 
+        (tb$infant_age < tb$formula_first_day), 
+    na.rm = TRUE)
 
 ## 70 samples out of the 85 have "exclusively_breastfeeding" for `feeding_practice` column
-sum((tb$feeding_practice == "exclusively_breastfeeding") & !is.na(tb$breastfeeding_duration) & (tb$infant_age < tb$formula_first_day), na.rm = TRUE)
+sum((tb$feeding_practice == "exclusively_breastfeeding") & 
+        !is.na(tb$breastfeeding_duration) & 
+        (tb$infant_age < tb$formula_first_day), 
+    na.rm = TRUE)
 
-## 15 samples should have "exclusively_breastfeeding" as their feeding_practice value given that the first day of formula feeding was after the date the sample was collected
-sum((tb$feeding_practice == 'mixed_feeding') & !is.na(tb$breastfeeding_duration) & (tb$infant_age < tb$formula_first_day))
+## 15 samples should have "exclusively_breastfeeding" as their feeding_practice 
+## value given that the first day of formula feeding was after the date the 
+## sample was collected
+sum((tb$feeding_practice == 'mixed_feeding') & 
+        !is.na(tb$breastfeeding_duration) & 
+        (tb$infant_age < tb$formula_first_day))
 ```
 
 ## Consolidate redundant info
@@ -305,9 +331,6 @@ for (i in seq_len(nrow(tb))) {
 
 ## Curate ontology terms
 ### Create curation map
-"mixed_feeding"               "exclusively_breastfeeding"  
-[4] "no_breastfeeding"            "any_breastfeeding"           "exclusively_formula_feeding"
-
 ```{r}
 feeding_map <- data.frame(
   original_value = c("any_breastfeeding",
@@ -354,14 +377,16 @@ non_na_ind <- which(!is.na(curated_feeding_dat$original_source))
 head(curated_feeding_dat[c(1:3, non_na_ind),], 10)
 ```
 
-```{r}
+```{r echo=FALSE, eval=FALSE}
+## Previous version when we split the any_breastfeeding mapping into two 
+## curated terms. We decided to map it to a new combined curated term not to 
+## allow this attribute take multiple values.
+
 feeding_map2 <- feeding_map %>% 
   group_by(original_value) %>%
-  mutate(curated_ontology_term = str_c(curated_ontology_term, collapse= '; ')) %>%
+  mutate(curated_ontology_term = str_c(curated_ontology_term, collapse= ';')) %>%
   unique()
-```
 
-```{r}
 curated_feeding_dat2 <- tb %>%
   transmute(curation_id = curation_id,
             original_source = source,
@@ -383,5 +408,5 @@ curated_feeding_dat2 <- tb %>%
 ### Save the results
 ```{r}
 readr::write_csv(feeding_map, "maps/cMD_feeding_map.csv")
-readr::write_csv(curated_feeding_dat, "data/curated_feeding_method.csv")
+readr::write_csv(curated_feeding_dat2, "data/curated_feeding_method.csv")
 ```

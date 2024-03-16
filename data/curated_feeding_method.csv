@@ -1127,7 +1127,7 @@ BackhedF_2015:SID10_4M,feeding_practice,exclusively_breastfeeding,Exclusively Br
 BackhedF_2015:SID10_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID45_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID45_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID45_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID45_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID45_M,NA,NA,NA,NA
 BackhedF_2015:SID53_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID53_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -1190,7 +1190,7 @@ BackhedF_2015:SID350_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID350_M,NA,NA,NA,NA
 BackhedF_2015:SID42_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID42_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID42_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID42_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID42_M,NA,NA,NA,NA
 BackhedF_2015:SID572_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID572_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
@@ -1202,7 +1202,7 @@ BackhedF_2015:SID587_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID587_M,NA,NA,NA,NA
 BackhedF_2015:SID589_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID589_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID589_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID589_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID589_M,NA,NA,NA,NA
 BackhedF_2015:SID598_B,NA,NA,NA,NA
 BackhedF_2015:SID598_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -1210,11 +1210,11 @@ BackhedF_2015:SID598_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID598_M,NA,NA,NA,NA
 BackhedF_2015:SID599_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID599_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID599_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID599_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID599_M,NA,NA,NA,NA
 BackhedF_2015:SID608_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID608_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID608_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID608_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID608_M,NA,NA,NA,NA
 BackhedF_2015:SID70_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID70_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -1253,7 +1253,7 @@ BackhedF_2015:SID195_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID195_M,NA,NA,NA,NA
 BackhedF_2015:SID201_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID201_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID201_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID201_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID201_M,NA,NA,NA,NA
 BackhedF_2015:SID224_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID224_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -1277,7 +1277,7 @@ BackhedF_2015:SID244_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID244_M,NA,NA,NA,NA
 BackhedF_2015:SID256_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID256_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID256_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID256_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID256_M,NA,NA,NA,NA
 BackhedF_2015:SID258_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID258_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
@@ -1305,7 +1305,7 @@ BackhedF_2015:SID281_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID281_M,NA,NA,NA,NA
 BackhedF_2015:SID335_B,feeding_practice,mixed_feeding,Mixed Feeding,NA
 BackhedF_2015:SID335_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID335_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID335_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID335_M,NA,NA,NA,NA
 BackhedF_2015:SID338_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID338_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
@@ -1325,7 +1325,7 @@ BackhedF_2015:SID367_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID367_M,NA,NA,NA,NA
 BackhedF_2015:SID377_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID377_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID377_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID377_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID377_M,NA,NA,NA,NA
 BackhedF_2015:SID38_B,NA,NA,NA,NA
 BackhedF_2015:SID38_4M,feeding_practice,exclusively_formula_feeding,Exclusively Formula Feeding,NA
@@ -1369,7 +1369,7 @@ BackhedF_2015:SID546_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID546_M,NA,NA,NA,NA
 BackhedF_2015:SID560_B,feeding_practice,mixed_feeding,Mixed Feeding,NA
 BackhedF_2015:SID560_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID560_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID560_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID560_M,NA,NA,NA,NA
 BackhedF_2015:SID565_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID565_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
@@ -1377,7 +1377,7 @@ BackhedF_2015:SID565_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID565_M,NA,NA,NA,NA
 BackhedF_2015:SID567_B,feeding_practice,mixed_feeding,Mixed Feeding,NA
 BackhedF_2015:SID567_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID567_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID567_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID567_M,NA,NA,NA,NA
 BackhedF_2015:SID570_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID570_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -1393,7 +1393,7 @@ BackhedF_2015:SID591_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID591_M,NA,NA,NA,NA
 BackhedF_2015:SID615_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID615_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID615_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID615_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID615_M,NA,NA,NA,NA
 BackhedF_2015:SID624_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID624_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
@@ -1413,7 +1413,7 @@ BackhedF_2015:SID130_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID130_M,NA,NA,NA,NA
 BackhedF_2015:SID157_B,feeding_practice,exclusively_formula_feeding,Exclusively Formula Feeding,NA
 BackhedF_2015:SID157_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID157_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID157_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID157_M,NA,NA,NA,NA
 BackhedF_2015:SID203_B,feeding_practice,mixed_feeding,Mixed Feeding,NA
 BackhedF_2015:SID203_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -1421,11 +1421,11 @@ BackhedF_2015:SID203_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID203_M,NA,NA,NA,NA
 BackhedF_2015:SID240_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID240_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID240_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID240_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID240_M,NA,NA,NA,NA
 BackhedF_2015:SID345_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID345_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID345_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID345_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID345_M,NA,NA,NA,NA
 BackhedF_2015:SID511_B,feeding_practice,mixed_feeding,Mixed Feeding,NA
 BackhedF_2015:SID511_4M,feeding_practice,exclusively_formula_feeding,Exclusively Formula Feeding,NA
@@ -1488,7 +1488,7 @@ BackhedF_2015:SID585_12M,feeding_practice,no_breastfeeding,No Breastfeeding,NA
 BackhedF_2015:SID585_M,NA,NA,NA,NA
 BackhedF_2015:SID633_B,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 BackhedF_2015:SID633_4M,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-BackhedF_2015:SID633_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+BackhedF_2015:SID633_12M,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 BackhedF_2015:SID633_M,NA,NA,NA,NA
 BackhedF_2015:SID640_B,feeding_practice,mixed_feeding,Mixed Feeding,NA
 BackhedF_2015:SID640_4M,feeding_practice,mixed_feeding,Mixed Feeding,NA
@@ -3398,7 +3398,7 @@ FerrettiP_2018:CA_C10008IS2121SA_t1M15,feeding_practice,exclusively_breastfeedin
 FerrettiP_2018:CA_C10008IS2123FE_t2M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10008IS2124SA_t2M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10008IS2127FE_t3M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-FerrettiP_2018:CA_C10008IS2131FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+FerrettiP_2018:CA_C10008IS2131FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 FerrettiP_2018:CA_C10008MS2115SA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10008MS2117VA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10009IS2138FE_t1M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
@@ -3452,14 +3452,14 @@ FerrettiP_2018:CA_C10024IS2415FE_t3M15,feeding_practice,exclusively_breastfeedin
 FerrettiP_2018:CA_C10024MS2403SA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10024MS2405VA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10024IS2419FE_t4M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-FerrettiP_2018:CA_C10024IS2419FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+FerrettiP_2018:CA_C10024IS2419FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 FerrettiP_2018:CA_C10026IS2444FE_t1M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10026IS2449FE_t2M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10026IS2451FE_t3M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10026MS2439SA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10026MS2440FE_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10026MS2441VA_t0M15,NA,NA,NA,NA
-FerrettiP_2018:CA_C10026IS2465FE_t4M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+FerrettiP_2018:CA_C10026IS2465FE_t4M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 FerrettiP_2018:CA_C10029IS2500SA_t2M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10029MS2491SA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10029MS2493VA_t0M16,NA,NA,NA,NA
@@ -3485,7 +3485,7 @@ FerrettiP_2018:CA_C10032IS2552SA_t2M15,feeding_practice,exclusively_breastfeedin
 FerrettiP_2018:CA_C10032IS2555FE_t3M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10032IS2549SA_t1M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10032IS2559FE_t4M15,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-FerrettiP_2018:CA_C10032IS2559FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+FerrettiP_2018:CA_C10032IS2559FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 FerrettiP_2018:CA_C10032MS2543SA_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10032MS2544FE_t0M15,NA,NA,NA,NA
 FerrettiP_2018:CA_C10032MS2545VA_t0M15,NA,NA,NA,NA
@@ -3553,7 +3553,7 @@ FerrettiP_2018:CA_C10052IS2908FE_t1M16,feeding_practice,exclusively_breastfeedin
 FerrettiP_2018:CA_C10052IS2911FE_t2M16,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10052IS2912SA_t2M16,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10052IS2915FE_t3M16,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
-FerrettiP_2018:CA_C10052IS2920FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding,NA
+FerrettiP_2018:CA_C10052IS2920FE_t5M16,feeding_practice,any_breastfeeding,Exclusively Breastfeeding;Mixed Feeding,NA
 FerrettiP_2018:CA_C10055IS2962FE_t1M16,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10055IS2965FE_t2M16,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
 FerrettiP_2018:CA_C10055IS2966SA_t2M16,feeding_practice,exclusively_breastfeeding,Exclusively Breastfeeding,NA
