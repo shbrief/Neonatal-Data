@@ -12,7 +12,6 @@ output: github_document
 ---
 
 # Setup
-## Load packages
 ```{r install packages, eval=FALSE}
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
@@ -26,64 +25,53 @@ suppressPackageStartupMessages({
 })
 ```
 
-## Load data
-```{r neonatal columns}
-## A list of neonatal data column names
-neonatal_cols <- c("infant_age",
-                   "born_method", 
-                   "gestational_age",
-                   "premature",
-                   "birth_weight",
-                   "c_section_type",
-                   "feeding_practice",
-                   "formula_first_day",
-                   "breastfeeding_duration")
-```
-
 ```{r curated neonatal dataframe, warning=FALSE}
 tb <- sampleMetadata %>%
-    mutate(curation_id = paste(study_name, sample_id, sep = ":")) %>%
-    dplyr::select(curation_id, neonatal_cols)
+    mutate(curation_id = paste(study_name, sample_id, sep = ":"))
 ```
 
 # neonatal_delivery_procedure
 The two original columns `born_method` and `c_section_type` are harmonized to
 the curated column, `neonatal_delivery_procedure`.
 
+```{r}
+delivery_tb <- tb[c("curation_id", "born_method", "c_section_type")]
+```
+
 ## EDA
 ```{r}
 ## 782 samples have information from both `born_method` and `c_section_type`
-na_summary <- rowSums(!is.na(tb[c("born_method", "c_section_type")]))
+na_summary <- rowSums(!is.na(delivery_tb[c("born_method", "c_section_type")]))
 table(na_summary)
 
 ## All the used terms
-unique(tb$born_method)
-unique(tb$c_section_type)
+unique(delivery_tb$born_method)
+unique(delivery_tb$c_section_type)
 ```
 
 ```{r}
 both_ind <- which(na_summary == 2)
-unique(tb$born_method[both_ind])
+unique(delivery_tb$born_method[both_ind])
 
 ## No sample has only `c_section_type` info
-sum(is.na(tb$born_method) & !is.na(tb$c_section_type)) 
+sum(is.na(delivery_tb$born_method) & !is.na(delivery_tb$c_section_type)) 
 ```
 
 ## Consolidate redundant info
 ```{r curated delivery procedure}
-tb$source <- NA
-tb$value <- NA
+delivery_tb$source <- NA
+delivery_tb$value <- NA
 
-for (i in seq_len(nrow(tb))) {
-    if (is.na(tb$born_method[i])) {
-        tb$source[i] <- NA
-        tb$value[i] <- NA
-    } else if (!is.na(tb$born_method[i]) & is.na(tb$c_section_type[i])) {
-        tb$source[i] <- "born_method"
-        tb$value[i] <- tb$born_method[i]
+for (i in seq_len(nrow(delivery_tb))) {
+    if (is.na(delivery_tb$born_method[i])) {
+        delivery_tb$source[i] <- NA
+        delivery_tb$value[i] <- NA
+    } else if (!is.na(delivery_tb$born_method[i]) & is.na(delivery_tb$c_section_type[i])) {
+        delivery_tb$source[i] <- "born_method"
+        delivery_tb$value[i] <- delivery_tb$born_method[i]
     } else {
-        tb$source[i] <- "c_section_type"
-        tb$value[i] <- tb$c_section_type[i]
+        delivery_tb$source[i] <- "c_section_type"
+        delivery_tb$value[i] <- delivery_tb$c_section_type[i]
     }
 }
 ```
@@ -116,7 +104,7 @@ delivery_map <- data.frame(
   
 ### Update the metadata with the curated terms 
 ```{r}
-curated_delivery_dat <- tb %>%
+curated_delivery_dat <- delivery_tb %>%
     transmute(curation_id = curation_id,
               original_source = source,
               original_value = value,
@@ -138,20 +126,20 @@ Update column names
 ```{r}
 colnames(curated_delivery_dat) <-
     c("curation_id",
-      "original_neonatal_delivery_procedure_source",
-      "original_neonatal_delivery_procedure_value",
+      "curated_neonatal_delivery_procedure_source",
+      "original_neonatal_delivery_procedure",
       "curated_neonatal_delivery_procedure",
       "curated_neonatal_delivery_procedure_ontology_term_id")
 ```
 
 Check the harmonized/curated metadata
 ```{r}
-non_na_ind <- which(!is.na(curated_delivery_dat$original_neonatal_delivery_procedure_source))
+non_na_ind <- which(!is.na(curated_delivery_dat$curated_neonatal_delivery_procedure_source))
 head(curated_delivery_dat[c(1:3, non_na_ind),], 10)
 ```
 
 ## Save the results
-```{r}
+```{r eval=FALSE}
 readr::write_csv(delivery_map, "maps/cMD_delivery_procedure_map.csv")
 readr::write_csv(curated_delivery_dat, "data/curated_delivery_procedure.csv")
 ```
@@ -162,54 +150,59 @@ readr::write_csv(curated_delivery_dat, "data/curated_delivery_procedure.csv")
 The two original columns `gestational_age` and `premature` are harmonized 
 to the curated column `neonatal_preterm_birth`.
 
+```{r}
+perterm_tb <- tb[c("curation_id", "gestational_age", "premature")]
+```
+
+
 ## EDA
 ```{r}
 ## 1891 samples have information for both `gestational_age` and `premature`
-na_summary <- rowSums(!is.na(tb[c("gestational_age", "premature")]))
+na_summary <- rowSums(!is.na(perterm_tb[c("gestational_age", "premature")]))
 table(na_summary)
-summary(tb$gestational_age)
+summary(perterm_tb$gestational_age)
 ```
 
 ```{r}
 ## All the used values
-unique(tb$premature)
-summary(tb$gestational_age)
+unique(perterm_tb$premature)
+summary(perterm_tb$gestational_age)
 ```
 
 ```{r}
 ## No error detected in `gestational_age` and `premature`
-sum(tb$premature == "yes" & tb$gestational_age > 37, na.rm = TRUE)
+sum(perterm_tb$premature == "yes" & perterm_tb$gestational_age > 37, na.rm = TRUE)
 ```
 
 ```{r}
 ## 329 samples have no `premature` info, but a provided `gestational_age` observation
-sum(is.na(tb$premature) & !is.na(tb$gestational_age))
+sum(is.na(perterm_tb$premature) & !is.na(perterm_tb$gestational_age))
 
 ## 4 samples can have `neonatal_preterm_birth` == 'yes' 
-sum(is.na(tb$premature) & tb$gestational_age < 37, na.rm=TRUE)
+sum(is.na(perterm_tb$premature) & perterm_tb$gestational_age < 37, na.rm=TRUE)
 
 ## 325 samples can have `neonatal_preterm_birth` == 'no'
-sum(is.na(tb$premature) & tb$gestational_age >= 37, na.rm=TRUE)
+sum(is.na(perterm_tb$premature) & perterm_tb$gestational_age >= 37, na.rm=TRUE)
 ```
 
 ## Populate `preterm` with `gestational_age`
 ```{r}
-tb$source <- NA
-tb$value <- NA
+perterm_tb$source <- NA
+perterm_tb$value <- NA
 
-for (i in seq_len(nrow(tb))) {
-  if (is.na(tb$gestational_age[i])) {
-    tb$source[i] <- NA
-    tb$value[i] <- NA
-  } else if (is.na(tb$premature[i]) & tb$gestational_age[i] < 37) {
-    tb$source[i] <- "gestational_age"
-    tb$value[i] <- "yes"
-  } else if (is.na(tb$premature[i]) & tb$gestational_age[i] >= 37) {
-    tb$source[i] <- "gestational_age"
-    tb$value[i] <- "no"
+for (i in seq_len(nrow(perterm_tb))) {
+  if (is.na(perterm_tb$gestational_age[i])) {
+    perterm_tb$source[i] <- NA
+    perterm_tb$value[i] <- NA
+  } else if (is.na(perterm_tb$premature[i]) & perterm_tb$gestational_age[i] < 37) {
+    perterm_tb$source[i] <- "gestational_age"
+    perterm_tb$value[i] <- "yes"
+  } else if (is.na(perterm_tb$premature[i]) & perterm_tb$gestational_age[i] >= 37) {
+    perterm_tb$source[i] <- "gestational_age"
+    perterm_tb$value[i] <- "no"
   } else {
-    tb$source[i] <- "premature"
-    tb$value[i] <- tb$premature[i]
+    perterm_tb$source[i] <- "premature"
+    perterm_tb$value[i] <- perterm_tb$premature[i]
   }
 }
 ```
@@ -230,18 +223,19 @@ premature_map <- data.frame(
 
 ### Update the metadata with the curated terms
 ```{r}
-curated_premature_dat <- tb %>%
+curated_premature_dat <- perterm_tb %>%
   transmute(curation_id = curation_id,
-            original_source = source,
-            original_value = value,
-            curated_ontology_term = plyr::mapvalues(
+            curated_neonatal_preterm_birth_source = source,
+            original_neonatal_preterm_birth = value,
+            curated_neonatal_gestational_age = gestational_age,
+            curated_neonatal_preterm_birth = plyr::mapvalues(
               x = value,
               from = premature_map$original_value,
               to = premature_map$curated_ontology_term,
               warn_missing = FALSE
             )) %>%
-    mutate(curated_ontology_term_id = plyr::mapvalues(
-      x = curated_ontology_term,
+    mutate(curated_neonatal_preterm_birth_ontology_term_id = plyr::mapvalues(
+      x = curated_neonatal_preterm_birth,
       from = premature_map$curated_ontology_term,
       to = premature_map$curated_ontology_term_id,
       warn_missing = FALSE
@@ -249,23 +243,13 @@ curated_premature_dat <- tb %>%
 ```
 
 ```{r}
-## Update column names
-colnames(curated_premature_dat) <- 
-    c("curation_id",
-      "original_neonatal_preterm_birth_source",
-      "original_neonatal_preterm_birth_value",
-      "curated_neonatal_preterm_birth",
-      "curated_neonatal_preterm_birth_ontology_term_id")
-```
-
-```{r}
 ## Check the harmonized/curated metadata
-non_na_ind <- which(!is.na(curated_premature_dat$original_neonatal_preterm_birth_source))
+non_na_ind <- which(!is.na(curated_premature_dat$curated_neonatal_preterm_birth_source))
 head(curated_premature_dat[c(1:3, non_na_ind),])
 ```
 
 ## Save the results
-```{r}
+```{r eval=FALSE}
 readr::write_csv(premature_map, "maps/cMD_preterm_birth_map.csv")
 readr::write_csv(curated_premature_dat, "data/curated_preterm_birth.csv")
 ```
@@ -367,7 +351,7 @@ feeding_map <- data.frame(
 
 ### Update the metadata with the curated terms
 
-```{r echo=FALSE, eval=FALSE}
+```{r echo=FALSE}
 ## Previous version when we split the any_breastfeeding mapping into two 
 ## curated terms. We decided to map it to a new combined curated term not to 
 ## allow this attribute take multiple values.
@@ -383,8 +367,8 @@ curated_feeding_dat <- tb %>%
             original_value = value,
             curated_ontology_term = plyr::mapvalues(
               x = value,
-              from = feeding_map2$original_value,
-              to = feeding_map2$curated_ontology_term,
+              from = feeding_map_collapsed$original_value,
+              to = feeding_map_collapsed$curated_ontology_term,
               warn_missing = FALSE
             ))
 ```
@@ -393,19 +377,41 @@ curated_feeding_dat <- tb %>%
 ## Update column names
 colnames(curated_feeding_dat) <-
     c("curation_id",
-      "original_neonatal_feeding_method_source",
-      "original_neonatal_feeding_method_value",
+      "curated_neonatal_feeding_method_source",
+      "original_neonatal_feeding_method",
       "curated_neonatal_feeding_method")
 ```
 
 ```{r}
 ## Check the harmonized/curated metadata
-non_na_ind <- which(!is.na(curated_feeding_dat$original_neonatal_feeding_method_source))
+non_na_ind <- which(!is.na(curated_feeding_dat$curated_neonatal_feeding_method_source))
 head(curated_feeding_dat[c(1:3, non_na_ind),], 10)
 ```
 
 ### Save the results
-```{r}
+```{r eval=FALSE}
 readr::write_csv(feeding_map, "maps/cMD_feeding_map.csv")
-readr::write_csv(curated_feeding_dat2, "data/curated_feeding_method.csv")
+readr::write_csv(curated_feeding_dat, "data/curated_feeding_method.csv")
 ```
+
+```{r}
+curated_birth_weight <- tb %>% 
+    select(c("curation_id", "birth_weight")) %>%
+    rename(curated_neonatal_birth_weight = birth_weight)
+
+curated_neonatal <- left_join(
+    curated_delivery_dat,
+    curated_premature_dat,
+    by = "curation_id"
+) %>%
+    left_join(curated_feeding_dat,
+              by = "curation_id") %>%
+    left_join(curated_birth_weight,
+              by = "curation_id")
+
+datDir <- "~/OmicsMLRepo/OmicsMLRepoData/curatedMetagenomicData/data"
+readr::write_csv(curated_neonatal, file.path(datDir, "curated_neonatal.csv"))
+```
+
+
+
