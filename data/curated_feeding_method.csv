@@ -1,4 +1,4 @@
-curation_id,original_source,original_value,curated_ontology_term,curated_ontology_term_id
+curation_id,original_neonatal_feeding_method_source,original_neonatal_feeding_method_value,curated_neonatal_feeding_method,curated_neonatal_feeding_method_term_id
 AsnicarF_2017:MV_FEI1_t1Q14,NA,NA,NA,NA
 AsnicarF_2017:MV_FEI2_t1Q14,NA,NA,NA,NA
 AsnicarF_2017:MV_FEI3_t1Q14,NA,NA,NA,NA
